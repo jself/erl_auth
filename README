@@ -1,10 +1,14 @@
-erl_auth is an authentication library intended for use with web services
-It provides a REST interface via webmachine (http://bitbucket.org/justin/webmachine/wiki/Home)
+erl_auth is an authentication library intended for use with 
+web services.
+
+It provides a REST interface via webmachine 
+(http://bitbucket.org/justin/webmachine/wiki/Home)
 and will eventually provide clients for Django and phpbb
 
-My goal for this project is to eventually offer a full single sign on offering
-with domain locality. Currently, users are domain agnostic, and sessions
-are separated based on an application name.
+My goal for this project is to eventually offer a 
+full single sign on offering
+with domain locality. Currently, users are domain agnostic, 
+and sessions are separated based on an application name.
 
 The webmachine is located in web/
 

@@ -1,0 +1,6 @@
+127.0.0.1 - - [07/Feb/2010:17:59:09 -0500] "GET / HTTP/1.1" 404 193 "" "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.5 Safari/532.9"
+127.0.0.1 - - [07/Feb/2010:17:59:09 -0500] "GET /favicon.ico HTTP/1.1" 200 23 "" "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.5 Safari/532.9"
+127.0.0.1 - - [07/Feb/2010:17:59:15 -0500] "GET /model/ HTTP/1.1" 200 17 "" "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.5 Safari/532.9"
+127.0.0.1 - - [07/Feb/2010:17:59:15 -0500] "GET /favicon.ico HTTP/1.1" 200 23 "" "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.5 Safari/532.9"
+127.0.0.1 - - [07/Feb/2010:17:59:46 -0500] "GET /model/ HTTP/1.1" 500 0 "" "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.5 Safari/532.9"
+127.0.0.1 - - [07/Feb/2010:17:59:46 -0500] "GET /favicon.ico HTTP/1.1" 500 0 "" "Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.5 Safari/532.9"

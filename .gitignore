@@ -1,4 +1,6 @@
 *.pyc
 erl_crash.dmp
+web*
 *~
+*.swp
 

@@ -135,14 +135,17 @@ all_sessions() ->
 create_token(Username, Application) ->
     Token = string:strip(os:cmd("uuidgen -t"), right, $\n),
     F = fun() ->
-            mnesia:write(
-                #auth_session{username=Username,
-                    application=Application,
-                    token=Token,
-                    created=get_date()})
+            case mnesia:read(auth_profile, Username) of 
+                [] -> ok;
+                _Results -> 
+                    mnesia:write(
+                        #auth_session{username=Username,
+                        application=Application,
+                        token=Token,
+                        created=get_date()})
+            end
     end,
     {atomic, ok} = mnesia:transaction(F),
-    io:format("token: ~p~n", [Token]),
     Token.
 
 match_token(Username, Token, Application) ->
@@ -154,6 +157,11 @@ match_token(Username, Token, Application) ->
         Seconds ->
             get_date() - Seconds
     end,
+    io:format("After: ~p~n", [After]),
+    io:format("Token: ~p~n", [Token]),
+    io:format("Application: ~p~n", [Application]),
+    io:format("Username: ~p~n", [Username]),
+    io:format("Expire: ~p~n", [Expire]),
     F = fun() ->
             qlc:eval( qlc:q(
                     [S || S <- mnesia:table(auth_session), S#auth_session.username == Username, 
@@ -183,6 +191,14 @@ clear_tokens(Username, Application) ->
 get_date() ->
     {M, S, _} = erlang:now(),
     M * 1000000 + S.
+
+get_new_token(Username, Application) ->
+    F = fun() ->
+            clear_tokens(Username, Application),
+            create_token(Username, Application)
+    end,
+    {atomic, Token} = mnesia:transaction(F),
+    Token.
 
 authenticate(Username, Password, Application) ->
     clear_tokens(Username, Application),

@@ -4,7 +4,7 @@
 
 -module(api_token_resource).
 -export([init/1, allowed_methods/2, 
-    process_post/2, malformed_request/2, delete_resource/2]).
+    process_post/2, malformed_request/2, delete_resource/2, content_types_provided/2, get_new_token/2]).
 
 -include_lib("webmachine/include/webmachine.hrl").
 
@@ -39,11 +39,23 @@ malformed_request(Req, Context) ->
             {not is_defined(["username", "application"], Data), Req, NewC};
         'DELETE' ->
             {Data, NewC} = get_post(Req, Context),
-            {not is_defined(["username", "application"], Data), Req, NewC}
+            {not is_defined(["username", "application"], Data), Req, NewC};
+        'GET' ->
+            {not (proplists:is_defined("username", wrq:req_qs(Req)) and proplists:is_defined("application", wrq:req_qs(Req))), Req, Context}
     end.
 
 allowed_methods(Req, Context) -> 
-    {['POST', 'DELETE'], Req, Context}.
+    {['POST', 'DELETE', 'GET'], Req, Context}.
+
+content_types_provided(Req, Context) ->
+    %    {[{"application/json", to_json}], Req, Context}.
+    % easier to see...
+    {[{"text/plain", get_new_token}], Req, Context}.
+
+get_new_token(Req, Context) ->
+    Username = wrq:get_qs_value("username", Req),
+    Application = wrq:get_qs_value("application", Req),
+    {auth_client:get_new_token(Username, Application), Req, Context}.
 
 delete_resource(Req, Context) ->
     {Data, NewC} = get_post(Req, Context),
@@ -59,6 +71,7 @@ process_post(Req, Context) ->
     Application = proplists:get_value("application", Data),
     case proplists:is_defined("token", Data) of
         true ->
+            io:format("Checking Token: ~p~n", [proplists:get_value("token", Data)]),
             %%check the token to see if it's correct
             Token = proplists:get_value("token", Data),
             case auth_client:match_token(Username, Token, Application) of 

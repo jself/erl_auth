@@ -1,0 +1,6 @@
+To use, configure url in backend.py, set as the only AUTHENTICATION_BACKEND
+(this monkey patches django's login and logout functions), 
+and add to INSTALLED_APPS
+A PROJECT_NAME can be added to settings which becomes "application" in the
+erl_auth sessions and auth.
+

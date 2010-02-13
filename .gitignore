@@ -1,0 +1,4 @@
+*.pyc
+erl_crash.dmp
+*~
+

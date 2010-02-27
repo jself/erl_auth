@@ -32,7 +32,7 @@ class Profile(RestClient):
     def create(self, username, password, profile):
         profile = json.dumps(profile)
         args = urllib.urlencode(dict(username=username, password=password, profile=profile))
-        content = self._get(self.url, "POST", body=args)
+        content = self._get(self.url, "PUT", body=args, headers={'content-type':'text/plain'})
         return content
     def update(self, username, profile):
         profile = json.dumps(profile)
@@ -42,6 +42,15 @@ class Profile(RestClient):
     def delete(self, username):
         args = urllib.urlencode({'username':username})
         content = self._get(self.url, "DELETE", body=args)
+        return content
+
+class Password(RestClient):
+    def __init__(self):
+        super(Password, self).__init__()
+        self.url = url + "/password"
+    def change_password(self, username, password):
+        args = urllib.urlencode({'username':username, 'password':password})
+        content = self._get(self.url, "POST", body=args)
         return content
 
 class Auth(RestClient):

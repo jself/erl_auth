@@ -4,7 +4,8 @@
 
 -module(api_profile_resource).
 -export([init/1, allowed_methods/2, get_profile/2, content_types_provided/2,
-    process_post/2, malformed_request/2, delete_resource/2]).
+    process_post/2, malformed_request/2, delete_resource/2, content_types_accepted/2,
+    create_profile/2, is_conflict/2]).
 
 -include_lib("webmachine/include/webmachine.hrl").
 
@@ -37,6 +38,9 @@ malformed_request(Req, Context) ->
         'POST' ->
             {Data, NewC} = get_post(Req, Context),
             {not is_defined(["username", "profile"], Data), Req, NewC};
+        'PUT' ->
+            {Data, NewC} = get_post(Req, Context),
+            {not is_defined(["username", "password", "profile"], Data), Req, NewC};
         'GET' ->
             {not proplists:is_defined("username", wrq:req_qs(Req)), Req, Context};
         'DELETE' ->
@@ -44,8 +48,14 @@ malformed_request(Req, Context) ->
             {not is_defined(["username"], Data), Req, NewC}
     end.
 
+is_conflict(Req, Context) ->
+    {Data, NewC} = get_post(Req, Context),
+    Username = proplists:get_value("username", Data),
+    {false, Req, NewC}.
+
+
 allowed_methods(Req, Context) -> 
-    {['POST', 'GET', 'DELETE'], Req, Context}.
+    {['PUT', 'POST', 'GET', 'DELETE'], Req, Context}.
 
 delete_resource(Req, Context) ->
     {Data, NewC} = get_post(Req, Context),
@@ -57,6 +67,20 @@ content_types_provided(Req, Context) ->
     %    {[{"application/json", to_json}], Req, Context}.
     % easier to see...
     {[{"text/plain", get_profile}], Req, Context}.
+
+content_types_accepted(Req, Context) ->
+    {[{"text/plain", create_profile}], Req, Context}.
+
+create_profile(Req, Context) ->
+    {Data, NewC} = get_post(Req, Context),
+    Username = proplists:get_value("username", Data),
+    Profile = proplists:get_value("profile", Data),
+    Password = proplists:get_value("password", Data),
+    case auth_client:create_profile(Username, Password, Profile) of
+        ok -> {true, wrq:append_to_response_body("Created", Req), NewC};
+        R -> {false, wrq:append_to_response_body(io_lib:format("~p", [R]), Req), context}
+    end.
+
 
 get_profile(Req, Context) ->
     Username = wrq:get_qs_value("username", Req),
@@ -77,18 +101,9 @@ process_post(Req, Context) ->
     {Data, NewC} = get_post(Req, Context),
     Username = proplists:get_value("username", Data),
     Profile = proplists:get_value("profile", Data),
-    case proplists:is_defined("password", Data) of
-        true ->
-            %%check the token to see if it's correct
-            Password = proplists:get_value("password", Data),
-            case auth_client:create_profile(Username, Password, Profile) of
-                ok -> {true, wrq:append_to_response_body("Created", Req), NewC};
-                R -> {false, wrq:append_to_response_body(io_lib:format("~p", [R]), Req), context}
-            end;
-        false ->
-            case auth_client:update_profile(Username, Profile) of
-                ok -> {true, wrq:append_to_response_body("Changed", Req), NewC};
-                R -> {false, wrq:append_to_response_body(io_lib:format("~p", [R]), Req), context}
-            end
+    %%change an account
+    case auth_client:update_profile(Username, Profile) of
+        ok -> {true, wrq:append_to_response_body("Changed", Req), NewC};
+        R -> {false, wrq:append_to_response_body(io_lib:format("~p", [R]), Req), context}
     end.
 

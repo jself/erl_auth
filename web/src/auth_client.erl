@@ -69,6 +69,15 @@ create_profile(Username, Password, Profile) ->
     {atomic, R} = mnesia:transaction(F),
     R.
 
+change_password(Username, Password) ->
+    F = fun() ->
+            [ProfileObject] = qlc:eval( qlc:q(
+                    [P || P <- mnesia:table(auth_profile), P#auth_profile.username == Username])),
+            mnesia:write(ProfileObject#auth_profile{password=erlang:md5(Password)})
+    end,
+    {atomic, R} = mnesia:transaction(F),
+    R.
+
 get_profile(Username) ->
     F = fun() ->
             qlc:eval( qlc:q(

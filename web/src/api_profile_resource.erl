@@ -5,7 +5,7 @@
 -module(api_profile_resource).
 -export([init/1, allowed_methods/2, get_profile/2, content_types_provided/2,
     process_post/2, malformed_request/2, delete_resource/2, content_types_accepted/2,
-    create_profile/2, is_conflict/2]).
+    create_profile/2]).
 
 -include_lib("webmachine/include/webmachine.hrl").
 
@@ -47,12 +47,6 @@ malformed_request(Req, Context) ->
             {Data, NewC} = get_post(Req, Context),
             {not is_defined(["username"], Data), Req, NewC}
     end.
-
-is_conflict(Req, Context) ->
-    {Data, NewC} = get_post(Req, Context),
-    Username = proplists:get_value("username", Data),
-    {false, Req, NewC}.
-
 
 allowed_methods(Req, Context) -> 
     {['PUT', 'POST', 'GET', 'DELETE'], Req, Context}.

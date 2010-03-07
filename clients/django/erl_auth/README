@@ -1,6 +1,21 @@
-To use, configure url in backend.py, set as the only AUTHENTICATION_BACKEND
-(this monkey patches django's login and logout functions), 
+To use, configure url in backend.py, set as the AUTHENTICATION_BACKEND
+
+(this monkey patches django's login and logout functions, so needs to appear
+before django.contrib.auth or anything that uses it in INSTALLED_APPS), 
 and add to INSTALLED_APPS
+
+The above isn't necessary unless you need to get into the admin.
+
 A PROJECT_NAME can be added to settings which becomes "application" in the
 erl_auth sessions and auth.
 
+Changes to Users in admin will not reflect in the auth server. The auth server
+profile always takes precedence over django profiles. There are plans to change
+this to sync with saving users in django.
+
+request.user is now a proxy class around the profile returned from the auth
+server. Any fields not present in the profile will cause a django user
+to get pulled/created for the profile, and the field pulled from it instead.
+
+login, logout, authenticate, etc, are all moved now into auth and the proxy
+model.

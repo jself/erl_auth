@@ -71,7 +71,6 @@ process_post(Req, Context) ->
     Application = proplists:get_value("application", Data),
     case proplists:is_defined("token", Data) of
         true ->
-            io:format("Checking Token: ~p~n", [proplists:get_value("token", Data)]),
             %%check the token to see if it's correct
             Token = proplists:get_value("token", Data),
             case auth_client:match_token(Username, Token, Application) of 

@@ -166,11 +166,6 @@ match_token(Username, Token, Application) ->
         Seconds ->
             get_date() - Seconds
     end,
-    io:format("After: ~p~n", [After]),
-    io:format("Token: ~p~n", [Token]),
-    io:format("Application: ~p~n", [Application]),
-    io:format("Username: ~p~n", [Username]),
-    io:format("Expire: ~p~n", [Expire]),
     F = fun() ->
             qlc:eval( qlc:q(
                     [S || S <- mnesia:table(auth_session), S#auth_session.username == Username, 
